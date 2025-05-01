@@ -11,13 +11,24 @@ logging.basicConfig(
 )
 logger = logging.getLogger(MCP_SERVER_NAME)
 
+logger.info("Starting mcp-finnhub server...")
+
 load_dotenv()
+
+api_key = os.getenv("FINNHUB_API_KEY")
+if not api_key:
+    logger.warning("FINNHUB_API_KEY environment variable is not set!")
+else:
+    logger.debug(f"FINNHUB_API_KEY is set: {api_key[:4]}***")
 
 deps = ["finnhub-python", "python-dotenv"]
 
-finnhub_client = Client(api_key=os.getenv("FINNHUB_API_KEY"))
+logger.debug("Creating Finnhub client...")
+finnhub_client = Client(api_key=api_key)
+logger.info("Finnhub client created.")
 
 mcp = FastMCP(MCP_SERVER_NAME, dependencies=deps)
+logger.info("FastMCP server initialized. Ready to accept requests.")
 
 
 @mcp.tool(name="list_news", description="List all latest market news")
